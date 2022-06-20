@@ -5,24 +5,35 @@ import {Colors} from "../models/Colors";
 interface TimerProps {
     currentPlayer: Player | null;
     restart: () => void;
+    setCurrentPlayer: (player: Player | null) => void;
+    whitePlayer: Player;
+    blackPlayer: Player;
 }
 
-const Timer: FC<TimerProps> = ({currentPlayer, restart}) => {
+const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whitePlayer, blackPlayer}) => {
 
+    const [effectDep, setEffectDep] = useState(false);
+    const [prevPlayer, setPrevPlayer] = useState<Player | null>(null);
     const [blackTime, setBlackTime] = useState(300); // users time
     const [whiteTime, setWhiteTime] = useState(300);
     const timer = useRef<null | ReturnType<typeof setInterval>>(null);
 
     useEffect(() => {
+        setPrevPlayer(whitePlayer);
+    }, [])
+
+    useEffect(() => {
         startTimer();
-    }, [currentPlayer])
+    }, [currentPlayer, effectDep])
 
     function startTimer() {
         if (timer.current) {
             clearInterval(timer.current);
         }
-        const callback = currentPlayer?.color === Colors.WHITE ? decrementWhiteTimer : decrementBlackTimer;
-        timer.current = setInterval(callback, 1000);
+        if (effectDep){
+            const callback = currentPlayer?.color === Colors.WHITE ? decrementWhiteTimer : decrementBlackTimer;
+            timer.current = setInterval(callback, 10);
+        }
     }
 
     function decrementBlackTimer() {
@@ -34,18 +45,45 @@ const Timer: FC<TimerProps> = ({currentPlayer, restart}) => {
     }
 
     const handleRestart = () => {
-        setWhiteTime(300);
-        setBlackTime(300);
+        setWhiteTime(30000);
+        setBlackTime(30000);
+        setPrevPlayer(whitePlayer);
+        setCurrentPlayer(null);
+        setEffectDep(false);
         restart();
+    }
+
+    const handleStartGame = () => {
+        if (!effectDep) {
+            setCurrentPlayer(prevPlayer);
+        }else {
+            setPrevPlayer(currentPlayer);
+            setCurrentPlayer(null);
+        }
+        setEffectDep(prevState => !prevState);
+    }
+
+    const outOfTime = () => {
+        if (blackTime <= 0){
+            setCurrentPlayer(null);
+            return <div>White player won</div>
+        }else if (whiteTime <= 0){
+            setCurrentPlayer(null);
+            return <div>Black player won</div>
+        }
     }
 
     return (
         <div>
             <div>
+                <button onClick={handleStartGame}>Start game</button>
+            </div>
+            <div>
                 <button onClick={handleRestart}>Restart game</button>
             </div>
-            <h2>Black player - {blackTime}</h2>
-            <h2>White player - {whiteTime}</h2>
+            <h2>Black player - {blackTime >= 0 ? Math.floor(blackTime / 100) : 0}</h2>
+            <h2>White player - {whiteTime >= 0 ? Math.floor(whiteTime / 100) : 0}</h2>
+            {outOfTime()}
         </div>
     );
 };

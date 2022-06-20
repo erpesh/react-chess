@@ -15,7 +15,6 @@ function App() {
 
     useEffect(() => {
         restart();
-        setCurrentPlayer(whitePlayer);
     }, [])
 
     function restart() {
@@ -31,7 +30,13 @@ function App() {
 
     return (
         <div className="App">
-            <Timer currentPlayer={currentPlayer} restart={restart}/>
+            <Timer
+                currentPlayer={currentPlayer}
+                setCurrentPlayer={setCurrentPlayer}
+                restart={restart}
+                whitePlayer={whitePlayer}
+                blackPlayer={blackPlayer}
+            />
             <BoardComponent
                 board={board}
                 setBoard={setBoard}

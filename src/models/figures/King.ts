@@ -20,7 +20,6 @@ export class King extends Figure {
         || (absX === 1 && absY === 0)
         || (absX === 0 && absY === 1))
             return true;
-
         return false;
     }
 }

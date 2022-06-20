@@ -1,6 +1,8 @@
 import {Colors} from "./Colors";
 import {Figure} from "./figures/Figure";
 import {Board} from "./Board";
+import {Pawn} from "./figures/Pawn";
+import {Queen} from "./figures/Queen";
 
 export class Cell {
     readonly x: number;
@@ -87,12 +89,18 @@ export class Cell {
 
     moveFigure(target: Cell) {
         if (this.figure && this.figure.canMove(target)) {
+            this.transformPawn(target);
             this.figure.moveFigure(target);
             if (target.figure){
                 this.addLostFigure(target.figure)
             }
             target.setFigure(this.figure)
             this.figure = null;
+        }
+    }
+    transformPawn(target: Cell) {
+        if (this.figure instanceof Pawn && (target.y === 7 || target.y === 0)) {
+            this.figure = new Queen(this.figure.color, this.figure.cell);
         }
     }
 }
