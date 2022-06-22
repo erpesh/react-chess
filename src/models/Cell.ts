@@ -87,14 +87,26 @@ export class Cell {
             this.board.lostWhiteFigures.push(figure);
     }
 
+    isCheck(): boolean {
+        for (let i = 0; i < this.board.cells.length; i++) {
+            const row = this.board.cells[i];
+            for (let j = 0; j < row.length; j++) {
+                if (row[j].figure?.canAttackKing()) {
+                    console.log('true');
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     moveFigure(target: Cell) {
         if (this.figure && this.figure.canMove(target)) {
             this.transformPawn(target);
             this.figure.moveFigure(target);
-            if (target.figure){
+            if (target.figure)
                 this.addLostFigure(target.figure)
-            }
-            target.setFigure(this.figure)
+            target.setFigure(this.figure);
             this.figure = null;
         }
     }

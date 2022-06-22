@@ -1,5 +1,4 @@
 import React, {FC} from 'react';
-import {Colors} from "../models/Colors";
 import {Cell} from "../models/Cell";
 
 interface CellComponents {

@@ -14,8 +14,8 @@ const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whiteP
 
     const [effectDep, setEffectDep] = useState(false);
     const [prevPlayer, setPrevPlayer] = useState<Player | null>(null);
-    const [blackTime, setBlackTime] = useState(300); // users time
-    const [whiteTime, setWhiteTime] = useState(300);
+    const [blackTime, setBlackTime] = useState(60000); // users time
+    const [whiteTime, setWhiteTime] = useState(60000);
     const timer = useRef<null | ReturnType<typeof setInterval>>(null);
 
     useEffect(() => {
@@ -45,8 +45,8 @@ const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whiteP
     }
 
     const handleRestart = () => {
-        setWhiteTime(30000);
-        setBlackTime(30000);
+        setWhiteTime(60000);
+        setBlackTime(60000);
         setPrevPlayer(whitePlayer);
         setCurrentPlayer(null);
         setEffectDep(false);
@@ -76,7 +76,7 @@ const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whiteP
     return (
         <div>
             <div>
-                <button onClick={handleStartGame}>Start game</button>
+                <button onClick={handleStartGame}>{!effectDep ? "Start game" : "Pause"}</button>
             </div>
             <div>
                 <button onClick={handleRestart}>Restart game</button>
