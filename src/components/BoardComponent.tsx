@@ -15,6 +15,7 @@ interface BoardProps {
 const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPlayer}) => {
 
     const [isCheck, setIsCheck] = useState(false);
+    const [isMate, setIsMate] = useState(false);
     const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
     useEffect(() => {
@@ -22,11 +23,18 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
     }, [selectedCell])
 
     function click(cell: Cell) {
+        if (selectedCell === null) {
+            console.log("fafa")
+        }
         if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
             if (cell.figure?.name === FigureNames.KING)
                 return;
             selectedCell.moveFigure(cell);
-            setIsCheck(selectedCell.isCheck());
+            const _isCheck = board.isCheck();
+            setIsCheck(_isCheck);
+            if (_isCheck) {
+                setIsMate(board.isMate(currentPlayer?.color));
+            }
             swapPlayer();
             setSelectedCell(null);
         } else if (selectedCell === cell) {
@@ -50,6 +58,7 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
         <div>
             <h3>Current player: {currentPlayer?.color}</h3>
             <h3>{isCheck ? "Check!" : ""}</h3>
+            <h3>{isMate ? "Mate!" : ""}</h3>
             <div className="board">
                 {board.cells.map((row, index) =>
                     <React.Fragment key={index}>

@@ -23,6 +23,13 @@ export class Cell {
         this.id = Math.random();
     }
 
+    getCopy(): Cell {
+        const cell = new Cell(this.board, this.x, this.y, this.color, this.figure);
+        cell.available = this.available;
+        cell.id = this.id;
+        return cell;
+    }
+
     isEmpty(): boolean {
         return this.figure === null;
     }
@@ -85,17 +92,6 @@ export class Cell {
             this.board.lostBlackFigures.push(figure);
         else
             this.board.lostWhiteFigures.push(figure);
-    }
-
-    isCheck(): boolean {
-        for (let i = 0; i < this.board.cells.length; i++) {
-            const row = this.board.cells[i];
-            for (let j = 0; j < row.length; j++) {
-                if (row[j].figure?.canAttackKing())
-                    return true;
-            }
-        }
-        return false;
     }
 
     moveFigure(target: Cell) {

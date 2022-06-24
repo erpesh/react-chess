@@ -6,7 +6,7 @@ import {Queen} from "./figures/Queen";
 import {Bishop} from "./figures/Bishop";
 import {Knight} from "./figures/Knight";
 import {Rook} from "./figures/Rook";
-import {Figure, FigureNames} from "./figures/Figure";
+import {Figure} from "./figures/Figure";
 
 export class Board {
     cells: Cell[][] = []
@@ -17,14 +17,60 @@ export class Board {
         for (let i = 0; i < 8; i++){
             const row: Cell[] = []
             for (let j = 0; j < 8; j++){
-                if ((i + j) % 2 !== 0) {
+                if ((i + j) % 2 !== 0)
                     row.push(new Cell(this, j, i, Colors.BLACK, null)) // black cells
-                }else {
+                else
                     row.push(new Cell(this, j, i, Colors.WHITE, null)) // white cells
-                }
             }
             this.cells.push(row);
         }
+    }
+
+    public getCopy(): Board {
+        const newBoard = new Board();
+        let cells: Cell[][] = [];
+        for (let i = 0; i < 8; i++) {
+            const row: Cell[] = []
+            for (let j = 0; j < 8; j++) {
+                let newCell = new Cell(
+                    newBoard,
+                    this.cells[i][j].x,
+                    this.cells[i][j].y,
+                    this.cells[i][j].color,
+                    null);
+                const fig = this.cells[i][j].figure;
+                newCell.figure = fig !== undefined && fig !== null ? fig.getCopy(newCell) : null;
+                row.push(newCell);
+            }
+            cells.push(row);
+        }
+        newBoard.cells = cells;
+        cells = [];
+        for (let i = 0; i < 8; i++) {
+            const row: Cell[] = []
+            for (let j = 0; j < 8; j++) {
+                let newCell = new Cell(
+                    newBoard,
+                    this.cells[i][j].x,
+                    this.cells[i][j].y,
+                    this.cells[i][j].color,
+                    null);
+                const fig = this.cells[i][j].figure;
+                newCell.figure = fig !== undefined && fig !== null ? fig.getCopy(newCell) : null;
+                row.push(newCell);
+            }
+            cells.push(row);
+        }
+        for (let i = 0; i < this.lostBlackFigures.length; i++) {
+            const fig = this.lostBlackFigures[i];
+            newBoard.lostBlackFigures.push(fig.getCopy(newBoard.getCell(fig.cell.x, fig.cell.y)))
+        }
+        for (let i = 0; i < this.lostWhiteFigures.length; i++) {
+            const fig = this.lostWhiteFigures[i];
+            newBoard.lostWhiteFigures.push(fig.getCopy(newBoard.getCell(fig.cell.x, fig.cell.y)))
+        }
+        console.log(this, newBoard);
+        return newBoard;
     }
 
     public getCopyBoard(): Board {
@@ -33,6 +79,45 @@ export class Board {
         newBoard.lostWhiteFigures = this.lostWhiteFigures;
         newBoard.lostBlackFigures = this.lostBlackFigures;
         return newBoard;
+    }
+
+    public isCheck(): boolean {
+        for (let i = 0; i < this.cells.length; i++) {
+            const row = this.cells[i];
+            for (let j = 0; j < row.length; j++) {
+                if (row[j].figure?.canAttackKing(this.cells))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public canPreventCheck(_cell: Cell): boolean {
+        const newBoard = this.getCopy();
+        const cell = newBoard.getCell(_cell.x, _cell.y);
+        for (let i = 0; i < this.cells.length; i++) {
+            const row = this.cells[i];
+            for (let j = 0; j < row.length; j++) {
+                if (cell.figure?.canMove(row[j])) {
+                    newBoard.cells[cell.y][cell.x].moveFigure(row[j]);
+                    if (!newBoard.isCheck()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public isMate(color: Colors | undefined): boolean {
+        for (let i = 0; i < this.cells.length; i++) {
+            const row = this.cells[i];
+            for (let j = 0; j < row.length; j++) {
+                if (color === row[j].color && this.canPreventCheck(row[j]))
+                    return false;
+            }
+        }
+        return true;
     }
 
     public highlightCells(selectedCell: Cell | null) {
