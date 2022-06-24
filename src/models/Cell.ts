@@ -91,10 +91,8 @@ export class Cell {
         for (let i = 0; i < this.board.cells.length; i++) {
             const row = this.board.cells[i];
             for (let j = 0; j < row.length; j++) {
-                if (row[j].figure?.canAttackKing()) {
-                    console.log('true');
+                if (row[j].figure?.canAttackKing())
                     return true;
-                }
             }
         }
         return false;

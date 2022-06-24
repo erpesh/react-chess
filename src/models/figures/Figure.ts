@@ -35,12 +35,8 @@ export class Figure {
             const row = cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
-                if (target.figure?.name === FigureNames.KING) {
-                    if (this.cell.figure?.canMove(target)) {
-                        console.log("check");
-                        return true;
-                    }
-                }
+                if (target.figure?.name === FigureNames.KING && this.cell.figure?.canMove(target))
+                    return true;
             }
         }
         return false;

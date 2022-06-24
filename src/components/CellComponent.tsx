@@ -1,5 +1,6 @@
 import React, {FC} from 'react';
 import {Cell} from "../models/Cell";
+import {FigureNames} from "../models/figures/Figure";
 
 interface CellComponents {
     cell: Cell;
@@ -15,7 +16,7 @@ const CellComponent: FC<CellComponents> = ({cell, selected, click}) => {
                     'cell',
                     cell.color,
                     selected ? 'selected' : '',
-                    cell.available && cell.figure ? "green" : ''
+                    cell.available && cell.figure && cell.figure.name !== FigureNames.KING ? "green" : ''
                 ].join(' ')}
             onClick={() => click(cell)}
         >

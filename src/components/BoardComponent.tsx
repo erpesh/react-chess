@@ -3,6 +3,7 @@ import {Board} from "../models/Board";
 import CellComponent from "./CellComponent";
 import {Cell} from "../models/Cell";
 import {Player} from "../models/Player";
+import {FigureNames} from "../models/figures/Figure";
 
 interface BoardProps {
     board: Board;
@@ -22,6 +23,8 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
 
     function click(cell: Cell) {
         if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
+            if (cell.figure?.name === FigureNames.KING)
+                return;
             selectedCell.moveFigure(cell);
             setIsCheck(selectedCell.isCheck());
             swapPlayer();
