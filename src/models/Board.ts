@@ -39,37 +39,22 @@ export class Board {
                     this.cells[i][j].color,
                     null);
                 const fig = this.cells[i][j].figure;
-                newCell.figure = fig !== undefined && fig !== null ? fig.getCopy(newCell) : null;
+                newCell.figure = fig !== undefined && fig !== null ? newCell.getCopyFigure(fig) : null;
+                console.log(fig, newCell.figure);
                 row.push(newCell);
             }
             cells.push(row);
         }
         newBoard.cells = cells;
-        cells = [];
-        for (let i = 0; i < 8; i++) {
-            const row: Cell[] = []
-            for (let j = 0; j < 8; j++) {
-                let newCell = new Cell(
-                    newBoard,
-                    this.cells[i][j].x,
-                    this.cells[i][j].y,
-                    this.cells[i][j].color,
-                    null);
-                const fig = this.cells[i][j].figure;
-                newCell.figure = fig !== undefined && fig !== null ? fig.getCopy(newCell) : null;
-                row.push(newCell);
-            }
-            cells.push(row);
-        }
+
         for (let i = 0; i < this.lostBlackFigures.length; i++) {
             const fig = this.lostBlackFigures[i];
-            newBoard.lostBlackFigures.push(fig.getCopy(newBoard.getCell(fig.cell.x, fig.cell.y)))
+            newBoard.lostBlackFigures.push(newBoard.getCell(fig.cell.x, fig.cell.y).getCopyFigure(fig))
         }
         for (let i = 0; i < this.lostWhiteFigures.length; i++) {
             const fig = this.lostWhiteFigures[i];
-            newBoard.lostWhiteFigures.push(fig.getCopy(newBoard.getCell(fig.cell.x, fig.cell.y)))
+            newBoard.lostWhiteFigures.push(newBoard.getCell(fig.cell.x, fig.cell.y).getCopyFigure(fig))
         }
-        console.log(this, newBoard);
         return newBoard;
     }
 
@@ -95,8 +80,9 @@ export class Board {
     public canPreventCheck(_cell: Cell): boolean {
         const newBoard = this.getCopy();
         const cell = newBoard.getCell(_cell.x, _cell.y);
+        // console.log(cell, _cell);
         for (let i = 0; i < this.cells.length; i++) {
-            const row = this.cells[i];
+            const row = newBoard.cells[i];
             for (let j = 0; j < row.length; j++) {
                 if (cell.figure?.canMove(row[j])) {
                     newBoard.cells[cell.y][cell.x].moveFigure(row[j]);
@@ -113,8 +99,11 @@ export class Board {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
-                if (color === row[j].color && this.canPreventCheck(row[j]))
+                console.log(color, row[j].figure?.color)
+                if (row[j].figure && color !== row[j].figure?.color && this.canPreventCheck(row[j])) {
+                    console.log('if')
                     return false;
+                }
             }
         }
         return true;

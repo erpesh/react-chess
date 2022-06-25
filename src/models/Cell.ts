@@ -1,8 +1,12 @@
 import {Colors} from "./Colors";
-import {Figure} from "./figures/Figure";
+import {Figure, FigureNames} from "./figures/Figure";
 import {Board} from "./Board";
 import {Pawn} from "./figures/Pawn";
 import {Queen} from "./figures/Queen";
+import {King} from "./figures/King";
+import {Knight} from "./figures/Knight";
+import {Bishop} from "./figures/Bishop";
+import {Rook} from "./figures/Rook";
 
 export class Cell {
     readonly x: number;
@@ -28,6 +32,26 @@ export class Cell {
         cell.available = this.available;
         cell.id = this.id;
         return cell;
+    }
+
+    getCopyFigure(figure: Figure): Figure {
+        let newFigure = new Figure(figure.color, this);
+        if (figure.name === FigureNames.KING)
+            newFigure = new King(figure.color, this);
+        if (figure.name === FigureNames.QUEEN)
+            newFigure = new Queen(figure.color, this);
+        if (figure.name === FigureNames.PAWN)
+            newFigure = new Pawn(figure.color, this);
+        if (figure.name === FigureNames.KNIGHT)
+            newFigure = new Knight(figure.color, this);
+        if (figure.name === FigureNames.BISHOP)
+            newFigure = new Bishop(figure.color, this);
+        if (figure.name === FigureNames.ROOK)
+            newFigure = new Rook(figure.color, this);
+        newFigure.logo = figure.logo;
+        newFigure.name = figure.name;
+        newFigure.id = figure.id;
+        return newFigure;
     }
 
     isEmpty(): boolean {

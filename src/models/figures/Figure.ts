@@ -1,7 +1,12 @@
 import {Colors} from "../Colors";
 import logo from '../../assets/black-bishop.png'
 import {Cell} from "../Cell";
-import {Board} from "../Board";
+import {King} from "./King";
+import {Queen} from "./Queen";
+import {Pawn} from "./Pawn";
+import {Knight} from "./Knight";
+import {Bishop} from "./Bishop";
+import {Rook} from "./Rook";
 
 export enum FigureNames {
     FIGURE = 'figure',
@@ -28,14 +33,6 @@ export class Figure {
         this.logo = null;
         this.name = FigureNames.FIGURE;
         this.id = Math.random();
-    }
-
-    getCopy(cell: Cell): Figure {
-        let newFigure = new Figure(this.color, cell);
-        newFigure.logo = this.logo;
-        newFigure.name = this.name;
-        newFigure.id = this.id;
-        return newFigure;
     }
 
     canAttackKing(cells: Cell[][]): boolean {
