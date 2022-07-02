@@ -23,9 +23,8 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
     }, [selectedCell])
 
     function click(cell: Cell) {
-        if (selectedCell === null) {
-            console.log("fafa")
-        }
+        if (selectedCell === null)
+            console.log("fafa");
         if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
             if (cell.figure?.name === FigureNames.KING)
                 return;
@@ -33,11 +32,12 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
             const _isCheck = board.isCheck();
             setIsCheck(_isCheck);
             if (_isCheck) {
-                const _isMate = board.isMate(currentPlayer?.color);
+                const _isMate = board.isMate();
                 setIsMate(_isMate);
             }else {
                 setIsMate(false);
             }
+
             swapPlayer();
             setSelectedCell(null);
         } else if (selectedCell === cell) {
@@ -48,7 +48,7 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
     }
 
     function highlightCells() {
-        board.highlightCells(selectedCell);
+        board.highlightCells(selectedCell, isCheck);
         updateBoard();
     }
 

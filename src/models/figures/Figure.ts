@@ -47,6 +47,13 @@ export class Figure {
         return false;
     }
 
+    canMoveIfCheck(target: Cell): boolean {
+        const newBoard = this.cell.board.getCopy();
+        const newTarget = newBoard.getCell(target.x, target.y);
+        newBoard.getCell(this.cell.x, this.cell.y).moveFigure(newTarget);
+        return !newBoard.isCheck();
+    }
+
     canMove(target: Cell): boolean{
         if (target.figure?.color === this.color)
             return false;

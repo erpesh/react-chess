@@ -40,7 +40,6 @@ export class Board {
                     null);
                 const fig = this.cells[i][j].figure;
                 newCell.figure = fig !== undefined && fig !== null ? newCell.getCopyFigure(fig) : null;
-                console.log(fig, newCell.figure);
                 row.push(newCell);
             }
             cells.push(row);
@@ -85,23 +84,24 @@ export class Board {
             const row = newBoard.cells[i];
             for (let j = 0; j < row.length; j++) {
                 if (cell.figure?.canMove(row[j])) {
-                    newBoard.cells[cell.y][cell.x].moveFigure(row[j]);
+                    console.log("can move " + row[j].x + " " + row[j].y)
+                    newBoard.getCell(cell.x, cell.y).moveFigure(row[j]);
                     if (!newBoard.isCheck()) {
+                        console.log(this, newBoard);
                         return true;
                     }
                 }
             }
         }
+        console.log(this, newBoard);
         return false;
     }
 
-    public isMate(color: Colors | undefined): boolean {
+    public isMate(): boolean {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
-                console.log(color, row[j].figure?.color)
-                if (row[j].figure && color !== row[j].figure?.color && this.canPreventCheck(row[j])) {
-                    console.log('if')
+                if (row[j].figure && this.canPreventCheck(row[j])) {
                     return false;
                 }
             }
@@ -109,12 +109,13 @@ export class Board {
         return true;
     }
 
-    public highlightCells(selectedCell: Cell | null) {
+    public highlightCells(selectedCell: Cell | null, isCheck: boolean) {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
-                target.available = !!selectedCell?.figure?.canMove(target);
+                target.available = !!selectedCell?.figure?.canMove(target)
+                    && (!isCheck || selectedCell?.figure?.canMoveIfCheck(target));
             }
         }
     }
