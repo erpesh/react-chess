@@ -1,12 +1,6 @@
 import {Colors} from "../Colors";
 import logo from '../../assets/black-bishop.png'
 import {Cell} from "../Cell";
-import {King} from "./King";
-import {Queen} from "./Queen";
-import {Pawn} from "./Pawn";
-import {Knight} from "./Knight";
-import {Bishop} from "./Bishop";
-import {Rook} from "./Rook";
 
 export enum FigureNames {
     FIGURE = 'figure',
@@ -40,7 +34,7 @@ export class Figure {
             const row = cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
-                if (target.figure?.name === FigureNames.KING && this.cell.figure?.canMove(target))
+                if (target.figure?.name === FigureNames.KING && this.canMove(target))
                     return true;
             }
         }
@@ -48,9 +42,13 @@ export class Figure {
     }
 
     canMoveIfCheck(target: Cell): boolean {
-        const newBoard = this.cell.board.getCopy();
+        let newBoard = this.cell.board.getCopy();
         const newTarget = newBoard.getCell(target.x, target.y);
+        // console.log(newTarget)
+        // console.log(this.cell.board, newBoard)
         newBoard.getCell(this.cell.x, this.cell.y).moveFigure(newTarget);
+        // console.log(this.cell.board.getCell(this.cell.x, this.cell.y),
+        //     newBoard.getCell(this.cell.x, this.cell.y), newBoard.isCheck())
         return !newBoard.isCheck();
     }
 

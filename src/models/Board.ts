@@ -30,20 +30,22 @@ export class Board {
         const newBoard = new Board();
         let cells: Cell[][] = [];
         for (let i = 0; i < 8; i++) {
-            const row: Cell[] = []
+            let row: Cell[] = []
             for (let j = 0; j < 8; j++) {
+                const oldCell = this.getCell(j, i);
                 let newCell = new Cell(
                     newBoard,
-                    this.cells[i][j].x,
-                    this.cells[i][j].y,
-                    this.cells[i][j].color,
+                    oldCell.x,
+                    oldCell.y,
+                    oldCell.color,
                     null);
-                const fig = this.cells[i][j].figure;
+                const fig = oldCell.figure;
                 newCell.figure = fig !== undefined && fig !== null ? newCell.getCopyFigure(fig) : null;
                 row.push(newCell);
             }
             cells.push(row);
         }
+        console.log(this.cells, cells);
         newBoard.cells = cells;
 
         for (let i = 0; i < this.lostBlackFigures.length; i++) {
@@ -79,21 +81,20 @@ export class Board {
     public canPreventCheck(_cell: Cell): boolean {
         const newBoard = this.getCopy();
         const cell = newBoard.getCell(_cell.x, _cell.y);
-        // console.log(cell, _cell);
         for (let i = 0; i < this.cells.length; i++) {
             const row = newBoard.cells[i];
             for (let j = 0; j < row.length; j++) {
                 if (cell.figure?.canMove(row[j])) {
-                    console.log("can move " + row[j].x + " " + row[j].y)
+                    console.log(cell.figure?.name + " can move " + row[j].x + " " + row[j].y)
                     newBoard.getCell(cell.x, cell.y).moveFigure(row[j]);
                     if (!newBoard.isCheck()) {
-                        console.log(this, newBoard);
+                        // console.log(this, newBoard);
                         return true;
                     }
                 }
             }
         }
-        console.log(this, newBoard);
+        // console.log(this, newBoard);
         return false;
     }
 
@@ -109,13 +110,15 @@ export class Board {
         return true;
     }
 
-    public highlightCells(selectedCell: Cell | null, isCheck: boolean) {
+    public highlightCells(selectedCell: Cell | null) {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
-                target.available = !!selectedCell?.figure?.canMove(target)
-                    && (!isCheck || selectedCell?.figure?.canMoveIfCheck(target));
+                const canMove = !!selectedCell?.figure?.canMove(target)
+                const canMoveIfCheck = !!selectedCell?.figure?.canMoveIfCheck(target);
+                console.log(canMove, canMoveIfCheck)
+                target.available = canMove && canMoveIfCheck;
             }
         }
     }

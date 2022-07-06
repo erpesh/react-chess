@@ -48,7 +48,7 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
     }
 
     function highlightCells() {
-        board.highlightCells(selectedCell, isCheck);
+        board.highlightCells(selectedCell);
         updateBoard();
     }
 

@@ -38,18 +38,22 @@ export class Cell {
         let newFigure = new Figure(figure.color, this);
         if (figure.name === FigureNames.KING)
             newFigure = new King(figure.color, this);
-        if (figure.name === FigureNames.QUEEN)
+        if (figure.name === FigureNames.QUEEN) {
+
             newFigure = new Queen(figure.color, this);
-        if (figure.name === FigureNames.PAWN)
-            newFigure = new Pawn(figure.color, this);
+        }
+        if (figure instanceof Pawn) {
+            let newFigurePawn = new Pawn(figure.color, this);
+            newFigurePawn.isFirstStep = figure.isFirstStep;
+            newFigurePawn.id = figure.id;
+            return newFigurePawn;
+        }
         if (figure.name === FigureNames.KNIGHT)
             newFigure = new Knight(figure.color, this);
         if (figure.name === FigureNames.BISHOP)
             newFigure = new Bishop(figure.color, this);
         if (figure.name === FigureNames.ROOK)
             newFigure = new Rook(figure.color, this);
-        newFigure.logo = figure.logo;
-        newFigure.name = figure.name;
         newFigure.id = figure.id;
         return newFigure;
     }
