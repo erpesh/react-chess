@@ -45,7 +45,6 @@ export class Board {
             }
             cells.push(row);
         }
-        console.log(this.cells, cells);
         newBoard.cells = cells;
 
         for (let i = 0; i < this.lostBlackFigures.length; i++) {
@@ -67,42 +66,40 @@ export class Board {
         return newBoard;
     }
 
-    public isCheck(): boolean {
+    public isCheck(): Colors | null | undefined {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
                 if (row[j].figure?.canAttackKing(this.cells))
-                    return true;
+                    return row[j].figure?.color;
             }
         }
-        return false;
+        return null;
     }
 
     public canPreventCheck(_cell: Cell): boolean {
         const newBoard = this.getCopy();
+        console.log(this.cells, newBoard.cells)
         const cell = newBoard.getCell(_cell.x, _cell.y);
         for (let i = 0; i < this.cells.length; i++) {
             const row = newBoard.cells[i];
             for (let j = 0; j < row.length; j++) {
                 if (cell.figure?.canMove(row[j])) {
-                    console.log(cell.figure?.name + " can move " + row[j].x + " " + row[j].y)
                     newBoard.getCell(cell.x, cell.y).moveFigure(row[j]);
                     if (!newBoard.isCheck()) {
-                        // console.log(this, newBoard);
                         return true;
                     }
                 }
             }
         }
-        // console.log(this, newBoard);
         return false;
     }
 
-    public isMate(): boolean {
+    public isMate(currentColor: Colors | undefined): boolean {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
-                if (row[j].figure && this.canPreventCheck(row[j])) {
+                if (row[j].figure && row[j].figure?.color !== currentColor && this.canPreventCheck(row[j])) {
                     return false;
                 }
             }
@@ -110,14 +107,18 @@ export class Board {
         return true;
     }
 
-    public highlightCells(selectedCell: Cell | null) {
+    public highlightCells(selectedCell: Cell | null, isCheck: Colors | null | undefined) {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
                 const canMove = !!selectedCell?.figure?.canMove(target)
-                const canMoveIfCheck = !!selectedCell?.figure?.canMoveIfCheck(target);
-                console.log(canMove, canMoveIfCheck)
+                const canMoveIfCheck =
+                    isCheck === null ||
+                    isCheck === undefined ||
+                    (selectedCell?.figure?.color !== isCheck &&
+                    !!selectedCell?.figure?.canMoveIfCheck(target));
+                console.log(canMove, canMoveIfCheck, 'ta', isCheck)
                 target.available = canMove && canMoveIfCheck;
             }
         }

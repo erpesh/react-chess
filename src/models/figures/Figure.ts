@@ -34,8 +34,11 @@ export class Figure {
             const row = cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
+                if (this.name === FigureNames.QUEEN && this.color === Colors.BLACK && target.figure?.name === FigureNames.KING)
+                    console.log("xxxx", this, target)
                 if (target.figure?.name === FigureNames.KING && this.canMove(target))
                     return true;
+
             }
         }
         return false;
@@ -43,20 +46,16 @@ export class Figure {
 
     canMoveIfCheck(target: Cell): boolean {
         let newBoard = this.cell.board.getCopy();
+        console.log(newBoard);
         const newTarget = newBoard.getCell(target.x, target.y);
-        // console.log(newTarget)
-        // console.log(this.cell.board, newBoard)
         newBoard.getCell(this.cell.x, this.cell.y).moveFigure(newTarget);
-        // console.log(this.cell.board.getCell(this.cell.x, this.cell.y),
-        //     newBoard.getCell(this.cell.x, this.cell.y), newBoard.isCheck())
+        console.log(newBoard.isCheck(), !newBoard.isCheck());
         return !newBoard.isCheck();
     }
 
     canMove(target: Cell): boolean{
         if (target.figure?.color === this.color)
             return false;
-        // if (target.figure?.name === FigureNames.KING)
-        //     return false;
         return true;
     }
     moveFigure(target: Cell) {

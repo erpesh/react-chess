@@ -4,6 +4,7 @@ import CellComponent from "./CellComponent";
 import {Cell} from "../models/Cell";
 import {Player} from "../models/Player";
 import {FigureNames} from "../models/figures/Figure";
+import {Colors} from "../models/Colors";
 
 interface BoardProps {
     board: Board;
@@ -14,7 +15,7 @@ interface BoardProps {
 
 const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPlayer}) => {
 
-    const [isCheck, setIsCheck] = useState(false);
+    const [isCheck, setIsCheck] = useState<Colors | null | undefined>(null);
     const [isMate, setIsMate] = useState(false);
     const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
@@ -25,14 +26,14 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
     function click(cell: Cell) {
         if (selectedCell === null)
             console.log("fafa");
-        if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
+        if (selectedCell !== null && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
             if (cell.figure?.name === FigureNames.KING)
                 return;
             selectedCell.moveFigure(cell);
             const _isCheck = board.isCheck();
             setIsCheck(_isCheck);
-            if (_isCheck) {
-                const _isMate = board.isMate();
+            if (_isCheck !== null && _isCheck !== undefined) {
+                const _isMate = board.isMate(currentPlayer?.color);
                 setIsMate(_isMate);
             }else {
                 setIsMate(false);
@@ -48,7 +49,7 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
     }
 
     function highlightCells() {
-        board.highlightCells(selectedCell);
+        board.highlightCells(selectedCell, isCheck);
         updateBoard();
     }
 
@@ -60,7 +61,7 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
     return (
         <div>
             <h3>Current player: {currentPlayer?.color}</h3>
-            <h3>{isCheck ? "Check!" : ""}</h3>
+            <h3>{isCheck ? `Check by ${isCheck}!` : ""}</h3>
             <h3>{isMate ? "Mate!" : ""}</h3>
             <div className="board">
                 {board.cells.map((row, index) =>
