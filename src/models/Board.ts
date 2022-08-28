@@ -26,36 +26,26 @@ export class Board {
         }
     }
 
-    public getCopy(): Board {
-        const newBoard = new Board();
-        let cells: Cell[][] = [];
-        for (let i = 0; i < 8; i++) {
-            let row: Cell[] = []
-            for (let j = 0; j < 8; j++) {
-                const oldCell = this.getCell(j, i);
-                let newCell = new Cell(
-                    newBoard,
-                    oldCell.x,
-                    oldCell.y,
-                    oldCell.color,
-                    null);
-                const fig = oldCell.figure;
-                newCell.figure = fig !== undefined && fig !== null ? newCell.getCopyFigure(fig) : null;
-                row.push(newCell);
-            }
-            cells.push(row);
+    public deepClone(obj : any, hash = new WeakMap()) : any {
+        // Do not try to clone primitives or functions
+        if (Object(obj) !== obj || obj instanceof Function) return obj;
+        if (hash.has(obj)) return hash.get(obj); // Cyclic reference
+        try { // Try to run constructor (without arguments, as we don't know them)
+            var result = new obj.constructor();
+        } catch(e) { // Constructor failed, create object without running the constructor
+            result = Object.create(Object.getPrototypeOf(obj));
         }
-        newBoard.cells = cells;
-
-        for (let i = 0; i < this.lostBlackFigures.length; i++) {
-            const fig = this.lostBlackFigures[i];
-            newBoard.lostBlackFigures.push(newBoard.getCell(fig.cell.x, fig.cell.y).getCopyFigure(fig))
-        }
-        for (let i = 0; i < this.lostWhiteFigures.length; i++) {
-            const fig = this.lostWhiteFigures[i];
-            newBoard.lostWhiteFigures.push(newBoard.getCell(fig.cell.x, fig.cell.y).getCopyFigure(fig))
-        }
-        return newBoard;
+        // Optional: support for some standard constructors (extend as desired)
+        if (obj instanceof Map)
+            Array.from(obj, ([key, val]) => result.set(this.deepClone(key, hash),
+                this.deepClone(val, hash)) );
+        else if (obj instanceof Set)
+            Array.from(obj, (key) => result.add(this.deepClone(key, hash)) );
+        // Register in hash
+        hash.set(obj, result);
+        // Clone and assign enumerable own properties recursively
+        return Object.assign(result, ...Object.keys(obj).map (
+            key => ({ [key]: this.deepClone(obj[key], hash) }) ));
     }
 
     public getCopyBoard(): Board {
@@ -66,27 +56,32 @@ export class Board {
         return newBoard;
     }
 
-    public isCheck(): Colors | null | undefined {
+    public isCheck(): Colors | boolean | undefined {
+        let result : Colors | undefined | boolean = false;
+        let count = 0;
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
-                if (row[j].figure?.canAttackKing(this.cells))
-                    return row[j].figure?.color;
+                if (row[j].figure?.canAttackKing(this.cells)) {
+                    result = row[j].figure?.color;
+                    count++;
+                }
             }
         }
-        return null;
+        if (count === 2)
+            return true
+        return result;
     }
 
     public canPreventCheck(_cell: Cell): boolean {
-        const newBoard = this.getCopy();
-        console.log(this.cells, newBoard.cells)
+        const newBoard = this.deepClone(this);
         const cell = newBoard.getCell(_cell.x, _cell.y);
         for (let i = 0; i < this.cells.length; i++) {
             const row = newBoard.cells[i];
             for (let j = 0; j < row.length; j++) {
                 if (cell.figure?.canMove(row[j])) {
-                    newBoard.getCell(cell.x, cell.y).moveFigure(row[j]);
-                    if (!newBoard.isCheck()) {
+                    const condition = cell.figure.canMoveIfCheck(row[j])
+                    if (condition === cell.figure.color || !condition) {
                         return true;
                     }
                 }
@@ -107,19 +102,23 @@ export class Board {
         return true;
     }
 
-    public highlightCells(selectedCell: Cell | null, isCheck: Colors | null | undefined) {
+    public highlightCells(selectedCell: Cell | null, isCheck: Colors | boolean | undefined) {
         for (let i = 0; i < this.cells.length; i++) {
             const row = this.cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
                 const canMove = !!selectedCell?.figure?.canMove(target)
                 const canMoveIfCheck =
-                    isCheck === null ||
-                    isCheck === undefined ||
+                    isCheck !== false &&
+                    isCheck !== undefined &&
                     (selectedCell?.figure?.color !== isCheck &&
-                    !!selectedCell?.figure?.canMoveIfCheck(target));
-                console.log(canMove, canMoveIfCheck, 'ta', isCheck)
-                target.available = canMove && canMoveIfCheck;
+                    !selectedCell?.figure?.canMoveIfCheck(target));
+                const canMoveIfNotCheck =
+                    (isCheck === false ||
+                    isCheck === undefined) &&
+                    (selectedCell?.figure?.canMoveIfCheck(target) === selectedCell?.figure?.color ||
+                    selectedCell?.figure?.canMoveIfCheck(target) === false)
+                target.available = canMove && (canMoveIfCheck || canMoveIfNotCheck);
             }
         }
     }

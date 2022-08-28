@@ -39,7 +39,6 @@ export class Cell {
         if (figure.name === FigureNames.KING)
             newFigure = new King(figure.color, this);
         if (figure.name === FigureNames.QUEEN) {
-
             newFigure = new Queen(figure.color, this);
         }
         if (figure instanceof Pawn) {

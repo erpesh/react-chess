@@ -34,23 +34,18 @@ export class Figure {
             const row = cells[i];
             for (let j = 0; j < row.length; j++) {
                 const target = row[j];
-                if (this.name === FigureNames.QUEEN && this.color === Colors.BLACK && target.figure?.name === FigureNames.KING)
-                    console.log("xxxx", this, target)
                 if (target.figure?.name === FigureNames.KING && this.canMove(target))
                     return true;
-
             }
         }
         return false;
     }
 
     canMoveIfCheck(target: Cell): boolean {
-        let newBoard = this.cell.board.getCopy();
-        console.log(newBoard);
+        let newBoard = this.cell.board.deepClone(this.cell.board)
         const newTarget = newBoard.getCell(target.x, target.y);
         newBoard.getCell(this.cell.x, this.cell.y).moveFigure(newTarget);
-        console.log(newBoard.isCheck(), !newBoard.isCheck());
-        return !newBoard.isCheck();
+        return newBoard.isCheck();
     }
 
     canMove(target: Cell): boolean{
