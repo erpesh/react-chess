@@ -13,6 +13,11 @@ export class Board {
     lostBlackFigures: Figure[] = []
     lostWhiteFigures: Figure[] = []
 
+    constructor() {
+        this.initCells();
+        this.addFigures();
+    }
+
     public initCells() {
         for (let i = 0; i < 8; i++){
             const row: Cell[] = []

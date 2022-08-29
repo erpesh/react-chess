@@ -1,6 +1,7 @@
-import React, {FC, useEffect, useRef, useState} from 'react';
+import React, {FC, useContext, useEffect, useRef, useState} from 'react';
 import {Player} from '../models/Player';
 import {Colors} from "../models/Colors";
+import SocketContext from "../context/SocketContext";
 
 interface TimerProps {
     currentPlayer: Player | null;
@@ -12,6 +13,7 @@ interface TimerProps {
 
 const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whitePlayer, blackPlayer}) => {
 
+    const {playerColor} = useContext(SocketContext);
     const [effectDep, setEffectDep] = useState(false);
     const [prevPlayer, setPrevPlayer] = useState<Player | null>(null);
     const [blackTime, setBlackTime] = useState(60000); // users time
@@ -55,7 +57,7 @@ const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whiteP
 
     const handleStartGame = () => {
         if (!effectDep) {
-            setCurrentPlayer(prevPlayer);
+            setCurrentPlayer(new Player(playerColor));
         }else {
             setPrevPlayer(currentPlayer);
             setCurrentPlayer(null);

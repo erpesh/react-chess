@@ -1,20 +1,23 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import {Board} from "../models/Board";
 import CellComponent from "./CellComponent";
 import {Cell} from "../models/Cell";
 import {Player} from "../models/Player";
 import {FigureNames} from "../models/figures/Figure";
 import {Colors} from "../models/Colors";
+import SocketContext from "../context/SocketContext";
+
 
 interface BoardProps {
   board: Board;
   setBoard: (board: Board) => void;
   currentPlayer: Player | null;
-  swapPlayer: () => void;
+  swapPlayer: (data: {selectedCell: Cell, target: Cell}) => void;
 }
 
 const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPlayer}) => {
 
+  const {playerColor, updateBoard} = useContext(SocketContext);
   const [isCheck, setIsCheck] = useState<Colors | boolean | undefined>(false);
   const [isMate, setIsMate] = useState(false);
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
@@ -24,6 +27,8 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
   }, [selectedCell])
 
   function click(cell: Cell) {
+    if (currentPlayer?.color !== playerColor)
+      return;
     if (selectedCell !== null && selectedCell !== cell && selectedCell.figure?.canMove(cell) && cell.available) {
       if (cell.figure?.name === FigureNames.KING)
         return;
@@ -34,9 +39,8 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
         const _isMate = board.isMate(currentPlayer?.color);
         setIsMate(_isMate);
       }
-
-      swapPlayer();
       setSelectedCell(null);
+      swapPlayer({selectedCell: selectedCell, target: cell});
     } else if (selectedCell === cell) {
       setSelectedCell(null);
     } else if (cell.figure?.color === currentPlayer?.color) {
@@ -47,11 +51,6 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPla
   function highlightCells() {
     board.highlightCells(selectedCell, isCheck);
     updateBoard();
-  }
-
-  function updateBoard() {
-    const newBoard = board.getCopyBoard();
-    setBoard(newBoard);
   }
 
   return (
