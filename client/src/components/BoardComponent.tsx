@@ -15,11 +15,9 @@ interface BoardProps {
   swapPlayer: (data: {selectedCell: Cell, target: Cell}) => void;
 }
 
-const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, swapPlayer}) => {
+const BoardComponent: FC<BoardProps> = ({board, currentPlayer, swapPlayer}) => {
 
-  const {playerColor, updateBoard} = useContext(SocketContext);
-  const [isCheck, setIsCheck] = useState<Colors | boolean | undefined>(false);
-  const [isMate, setIsMate] = useState(false);
+  const {playerColor, updateBoard, isCheck, setIsCheck, isMate, setIsMate} = useContext(SocketContext);
   const [selectedCell, setSelectedCell] = useState<Cell | null>(null);
 
   useEffect(() => {

@@ -14,9 +14,9 @@ const GamePage = () => {
   const [whitePlayer, setWhitePlayer] = useState(new Player(Colors.WHITE));
   const [blackPlayer, setBlackPlayer] = useState(new Player(Colors.BLACK));
 
-  useEffect(() => {
-    restart();
-  }, [])
+  // useEffect(() => {
+  //   restart();
+  // }, [])
 
   function restart() {
     const newBoard = new Board();
@@ -29,13 +29,13 @@ const GamePage = () => {
   }
   return (
       <div className="game">
-        <Timer
-            currentPlayer={currentPlayer}
-            setCurrentPlayer={setCurrentPlayer}
-            restart={restart}
-            whitePlayer={whitePlayer}
-            blackPlayer={blackPlayer}
-        />
+        {/*<Timer*/}
+        {/*    currentPlayer={currentPlayer}*/}
+        {/*    setCurrentPlayer={setCurrentPlayer}*/}
+        {/*    restart={restart}*/}
+        {/*    whitePlayer={whitePlayer}*/}
+        {/*    blackPlayer={blackPlayer}*/}
+        {/*/>*/}
         <button onClick={() => console.log(playerColor)}>Send</button>
         <BoardComponent
             board={board}

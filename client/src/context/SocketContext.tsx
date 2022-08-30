@@ -23,7 +23,11 @@ const INITIAL_STATE = {
   updateBoard: () => {},
   receiveData: () => {},
   currentPlayer: new Player(Colors.WHITE),
-  setCurrentPlayer: (() => undefined) as Dispatch<any>
+  setCurrentPlayer: (() => undefined) as Dispatch<any>,
+  isCheck: false,
+  setIsCheck: (() => undefined) as Dispatch<any>,
+  isMate: false,
+  setIsMate: (() => undefined) as Dispatch<any>
 };
 
 const SocketContext = createContext(INITIAL_STATE);
@@ -38,6 +42,8 @@ export const SocketProvider: FC<{children: any}> = ({children}) => {
   const [board, setBoard] = useState(new Board());
   const [isSecondPlayerReady, setIsSecondPlayerReady] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState(new Player(Colors.WHITE));
+  const [isCheck, setIsCheck] = useState<any>(false);
+  const [isMate, setIsMate] = useState(false);
 
   useEffect(() => {
     receiveData()
@@ -45,12 +51,14 @@ export const SocketProvider: FC<{children: any}> = ({children}) => {
 
   const receiveData = () => {
     socket.on("receive_message", data => {
-      console.log(data, board)
       const selectedCell = board.cells[data.selectedCell.y][data.selectedCell.x];
       const targetCell = board.cells[data.targetCell.y][data.targetCell.x];
       selectedCell.moveFigure(targetCell);
       setBoard(board)
-      setCurrentPlayer(new Player(playerColor));
+      setIsCheck(board.isCheck());
+      if (board.isCheck())
+        setIsMate(board.isMate(data.nextPlayer === Colors.WHITE ? Colors.BLACK: Colors.WHITE));
+      setCurrentPlayer(new Player(data.nextPlayer));
     })
   }
 
@@ -59,8 +67,9 @@ export const SocketProvider: FC<{children: any}> = ({children}) => {
       selectedCell: {x: data.selectedCell.x, y: data.selectedCell.y},
       targetCell: {x: data.target.x, y: data.target.y},
       room: roomId,
-      nextPlayer: playerColor === Colors.BLACK ? Colors.WHITE : Colors.BLACK
+      nextPlayer: playerColor === Colors.BLACK ? Colors.WHITE : Colors.BLACK,
     })
+    setBoard(board)
   }
 
   function updateBoard() {
@@ -88,12 +97,16 @@ export const SocketProvider: FC<{children: any}> = ({children}) => {
     board: board,
     isSecondPlayerReady: isSecondPlayerReady,
     currentPlayer: currentPlayer,
+    isCheck: isCheck,
+    isMate: isMate,
 
     setIsCreate: setIsCreate,
     setRoomId: setRoomId,
     setPlayerColor: setPlayerColor,
     setBoard: setBoard,
     setCurrentPlayer: setCurrentPlayer,
+    setIsCheck: setIsCheck,
+    setIsMate: setIsMate,
     joinRoom: joinRoom,
     isPlayerReady: isPlayerReady,
     doStep: doStep,

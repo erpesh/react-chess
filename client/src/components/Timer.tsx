@@ -14,28 +14,18 @@ interface TimerProps {
 const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whitePlayer, blackPlayer}) => {
 
     const {playerColor} = useContext(SocketContext);
-    const [effectDep, setEffectDep] = useState(false);
-    const [prevPlayer, setPrevPlayer] = useState<Player | null>(null);
     const [blackTime, setBlackTime] = useState(60000); // users time
     const [whiteTime, setWhiteTime] = useState(60000);
     const timer = useRef<null | ReturnType<typeof setInterval>>(null);
 
     useEffect(() => {
-        setPrevPlayer(whitePlayer);
-    }, [])
-
-    useEffect(() => {
         startTimer();
-    }, [currentPlayer, effectDep])
+    }, [currentPlayer])
 
     function startTimer() {
-        if (timer.current) {
-            clearInterval(timer.current);
-        }
-        if (effectDep){
-            const callback = currentPlayer?.color === Colors.WHITE ? decrementWhiteTimer : decrementBlackTimer;
-            timer.current = setInterval(callback, 10);
-        }
+        const callback = currentPlayer?.color === Colors.WHITE ? decrementWhiteTimer : decrementBlackTimer;
+        timer.current = setInterval(callback, 10);
+
     }
 
     function decrementBlackTimer() {
@@ -49,20 +39,11 @@ const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whiteP
     const handleRestart = () => {
         setWhiteTime(60000);
         setBlackTime(60000);
-        setPrevPlayer(whitePlayer);
-        setCurrentPlayer(null);
-        setEffectDep(false);
         restart();
     }
 
     const handleStartGame = () => {
-        if (!effectDep) {
-            setCurrentPlayer(new Player(playerColor));
-        }else {
-            setPrevPlayer(currentPlayer);
-            setCurrentPlayer(null);
-        }
-        setEffectDep(prevState => !prevState);
+        setCurrentPlayer(new Player(playerColor));
     }
 
     const outOfTime = () => {
@@ -78,7 +59,7 @@ const Timer: FC<TimerProps> = ({currentPlayer, setCurrentPlayer, restart, whiteP
     return (
         <div>
             <div>
-                <button onClick={handleStartGame}>{!effectDep ? "Start game" : "Pause"}</button>
+                <button onClick={handleStartGame}>{"start game"}</button>
             </div>
             <div>
                 <button onClick={handleRestart}>Restart game</button>
