@@ -64,5 +64,5 @@ When both players connected the game starts.
 
 ## Features
 
-all possible moves of the selected piece are highlighted. When in check, you can only move in such a way as to avoid the check. You can not make a move that will lead to a check from the opponent. If one of the players checks, the board is checked to checkmate.
+All possible moves of the selected piece are highlighted. When in check, you can only move in such a way as to avoid the check. You can not make a move that will lead to a check from the opponent. If one of the players checks, the board is checked to checkmate.
 
