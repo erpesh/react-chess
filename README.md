@@ -50,3 +50,4 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 Multiplayer chess made with React, Node.JS, Express and Socket.io
 
 Player creates room with random ID or join the room with existing ID.
+![](screen-1.png)
