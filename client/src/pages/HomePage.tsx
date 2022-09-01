@@ -1,13 +1,9 @@
-import React, {FC, useContext} from 'react';
-import GamePage from "./GamePage";
+import React, {useContext} from 'react';
 import {useNavigate} from "react-router-dom";
 import SocketContext from "../context/SocketContext";
-import {Colors} from "../models/Colors";
 
-interface HomePageProps {
-}
 
-const HomePage: FC<HomePageProps> = () => {
+const HomePage = () => {
   const navigate = useNavigate();
 
   const {setIsCreate, setRoomId, joinRoom, isPlayerReady} = useContext(SocketContext)
@@ -27,7 +23,8 @@ const HomePage: FC<HomePageProps> = () => {
   }
 
   return (
-      <div>
+      <div className="page">
+        <h1>Let's play chess!</h1>
         <button onClick={createGame}>Create Game</button>
         <button onClick={joinGame}>Join Game</button>
       </div>

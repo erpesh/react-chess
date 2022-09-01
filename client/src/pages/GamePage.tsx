@@ -36,7 +36,6 @@ const GamePage = () => {
         {/*    whitePlayer={whitePlayer}*/}
         {/*    blackPlayer={blackPlayer}*/}
         {/*/>*/}
-        <button onClick={() => console.log(playerColor)}>Send</button>
         <BoardComponent
             board={board}
             setBoard={setBoard}

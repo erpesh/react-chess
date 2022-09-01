@@ -22,9 +22,20 @@ const ChoosePage: FC<ChoosePageProps> = () => {
 
   return (
       <>
-        {isCreate ? <div>
-          Room id: {roomId}
-        </div> : <div>
+        {isCreate ? <div className="page">
+          <h1>Room id: {roomId}</h1>
+          <div className="lds-roller">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div> : <div className="page">
+          <h1>Enter room id</h1>
           <input onChange={event => setRoomInput(event.target.value)}/>
           <button onClick={() => {
             if (roomInput !== '') {
