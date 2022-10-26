@@ -9,7 +9,7 @@ Player creates room with random ID or join the room with existing ID.
 
 The player who creates the room waits for another player to connect.Another player should enter the ID of the room.
 
-When both players connected the game starts.
+When both players are connected the game starts.
 ![](client/src/assets/screen-4.png)
 
 ## Features
